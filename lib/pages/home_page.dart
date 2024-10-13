@@ -4,9 +4,10 @@ import 'product_detail_page.dart';
 import '../models/product_model.dart';
 import '../models/cart_model.dart';
 import '../models/favorites_model.dart';
-import 'cart_page.dart'; // Add this import
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -39,9 +40,9 @@ class _HomePageState extends State<HomePage> {
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
-          final isInCart = cartProducts.contains(product);
+          final isInCart = cartProducts.any((item) => item.product.id == product.id);
           final isInFavorites = favoritesProducts.contains(product);
-          final cartQuantity = cartProducts.where((p) => p == product).length;
+          final cartItem = cartProducts.firstWhere((item) => item.product.id == product.id, orElse: () => CartItem(product, 0));
 
           return Dismissible(
             key: Key(product.id.toString()),
@@ -93,25 +94,38 @@ class _HomePageState extends State<HomePage> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          Text(
+                            '${product.price} руб.',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               ElevatedButton.icon(
                                 onPressed: () {
                                   setState(() {
-                                    cartProducts.add(product);
+                                    if (isInCart) {
+                                      cartProducts[cartProducts.indexWhere((item) => item.product.id == product.id)].quantity++;
+                                    } else {
+                                      cartProducts.add(CartItem(product, 1));
+                                    }
                                   });
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                        content: Text(
-                                            '${product.name} ${isInCart ? 'удалено из корзины' : 'добавлено в корзину'}')),
+                                      content: Text(
+                                        '${product.name} добавлено в корзину',
+                                      ),
+                                    ),
                                   );
                                 },
-                                icon: Icon(Icons.shopping_cart,
-                                    color:
-                                        isInCart ? Colors.green : Colors.grey),
-                                label: Text(
-                                    cartQuantity > 0 ? '$cartQuantity' : ''),
+                                icon: Icon(
+                                  Icons.shopping_cart,
+                                  color: isInCart ? Colors.green : Colors.grey,
+                                ),
+                                label: Text(cartItem.quantity > 0 ? '${cartItem.quantity}' : ''),
                               ),
                               IconButton(
                                 icon: Icon(Icons.favorite,

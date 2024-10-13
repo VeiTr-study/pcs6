@@ -82,7 +82,7 @@ class ProductDetailPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                cartProducts.add(product);
+                cartProducts.add(CartItem(product, 1));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('${product.name} добавлено в корзину')),
                 );

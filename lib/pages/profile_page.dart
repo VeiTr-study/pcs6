@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  ProfilePage({super.key});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final TextEditingController nameController = TextEditingController(text: 'Мальцев Иван Владимирович');
+  final TextEditingController emailController = TextEditingController(text: 'example@mail.com');
+  final TextEditingController phoneController = TextEditingController(text: '+71234567899');
+
+  bool isEditable = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,19 +25,64 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: [
             TextField(
-              decoration: const InputDecoration(labelText: 'ФИО'),
+              controller: nameController,
+              decoration: isEditable
+                  ? InputDecoration(
+                labelText: 'ФИО',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blue,
+                  ),
+                ),
+              )
+                  : null,
+              readOnly: !isEditable,
             ),
+            const SizedBox(height: 16),
             TextField(
-              decoration: const InputDecoration(labelText: 'ПОЧТА'),
+              controller: emailController,
+              decoration: isEditable
+                  ? InputDecoration(
+                labelText: 'ПОЧТА',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blue,
+                  ),
+                ),
+              )
+                  : null,
+              readOnly: !isEditable,
             ),
+            const SizedBox(height: 16),
             TextField(
-              decoration: const InputDecoration(labelText: 'НОМЕР'),
+              controller: phoneController,
+              decoration: isEditable
+                  ? InputDecoration(
+                labelText: 'НОМЕР',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blue,
+                  ),
+                ),
+              )
+                  : null,
+              readOnly: !isEditable,
+              keyboardType: TextInputType.phone,
             ),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Save profile changes logic
+                setState(() {
+                  isEditable = !isEditable;
+                });
               },
-              child: const Text('Редактировать'),
+              child: Text(isEditable ? 'Сохранить' : 'Редактировать'),
             ),
           ],
         ),

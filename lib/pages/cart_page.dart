@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../models/cart_model.dart';
+import '../models/product_model.dart';
 
 class CartPage extends StatefulWidget {
+  const CartPage({super.key});
+
   @override
   _CartPageState createState() => _CartPageState();
 }
@@ -11,7 +12,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
-    final totalPrice = cartProducts.fold(0.0, (sum, item) => sum + item.price * item.quantity);
+    final totalPrice = cartProducts.fold(0.0, (sum, item) => sum + item.product.price * item.quantity);
 
     return Scaffold(
       appBar: AppBar(
@@ -27,16 +28,16 @@ class _CartPageState extends State<CartPage> {
             child: ListView.builder(
               itemCount: cartProducts.length,
               itemBuilder: (context, index) {
-                final product = cartProducts[index];
+                final cartItem = cartProducts[index];
                 return Dismissible(
-                  key: Key(product.id.toString()),
+                  key: Key(cartItem.product.id.toString()),
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) {
                     setState(() {
                       cartProducts.removeAt(index);
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${product.name} удален из корзины')),
+                      SnackBar(content: Text('${cartItem.product.name} удален из корзины')),
                     );
                   },
                   background: Container(
@@ -46,11 +47,11 @@ class _CartPageState extends State<CartPage> {
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   child: ListTile(
-                    leading: product.isImageUrl()
-                        ? Image.network(product.image, fit: BoxFit.cover)
-                        : Image.asset(product.image, fit: BoxFit.cover),
-                    title: Text(product.name),
-                    subtitle: Text('${product.quantity} x ${product.price} руб. = ${product.quantity * product.price} руб.'),
+                    leading: cartItem.product.isImageUrl()
+                        ? Image.network(cartItem.product.image, fit: BoxFit.cover)
+                        : Image.asset(cartItem.product.image, fit: BoxFit.cover),
+                    title: Text(cartItem.product.name),
+                    subtitle: Text('${cartItem.quantity} x ${cartItem.product.price} руб. = ${cartItem.quantity * cartItem.product.price} руб.'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -58,10 +59,10 @@ class _CartPageState extends State<CartPage> {
                           icon: const Icon(Icons.remove),
                           onPressed: () {
                             setState(() {
-                              if (product.quantity > 1) {
-                                product.quantity--;
+                              if (cartItem.quantity > 1) {
+                                cartItem.quantity--;
                               } else {
-                                cartProducts.remove(product);
+                                cartProducts.removeAt(index);
                               }
                             });
                           },
@@ -70,7 +71,7 @@ class _CartPageState extends State<CartPage> {
                           icon: const Icon(Icons.add),
                           onPressed: () {
                             setState(() {
-                              product.quantity++;
+                              cartItem.quantity++;
                             });
                           },
                         ),
